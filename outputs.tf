@@ -25,3 +25,7 @@ output "full_service_name" {
 output "use_graviton" {
   value = local.use_graviton
 }
+
+output "container_def" {
+  value = module.service_container_definition.rendered
+}
