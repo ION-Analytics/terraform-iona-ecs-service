@@ -3,6 +3,7 @@ locals {
   env       = lookup(var.labels, "env", "")
   component = lookup(var.labels, "component", "")
   extra_hosts = jsonencode(var.extra_hosts)
+  encoded_env = data.external.encode_env.result["env"]
 }
 
 data "template_file" "container_definitions" {
