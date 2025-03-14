@@ -26,6 +26,11 @@ output "use_graviton" {
   value = local.use_graviton
 }
 
-output "container_def" {
+output "DEBUG-container_def" {
   value = jsondecode(module.service_container_definition.rendered)
 }
+
+output "DEBUG-env" {
+  value = var.env
+}
+
