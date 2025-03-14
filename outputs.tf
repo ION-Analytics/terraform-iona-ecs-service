@@ -31,6 +31,6 @@ output "DEBUG-container_def" {
 }
 
 output "DEBUG-env" {
-  value = var.env
+  value = data.external.encode_env.result
 }
 
