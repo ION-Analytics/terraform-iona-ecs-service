@@ -7,7 +7,7 @@ output "DEBUG-env" {
 }
 
 output "DEBUG-container-env" {
- value = var.container-env
+ value = var.container_env
 }
 
 output "DEBUG-metadata" {
