@@ -31,6 +31,6 @@ output "DEBUG-container_def" {
 }
 
 output "DEBUG-env" {
-  value = local.encoded_env
+  value = module.service_container_definition.DEBUG-env
 }
 
