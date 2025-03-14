@@ -34,3 +34,10 @@ output "DEBUG-env" {
   value = module.service_container_definition.DEBUG-env
 }
 
+output "DEBUG-container-env" {
+ value = module.service_container_definition.DEBUG-container-env
+}
+
+output "DEBUG-metadata" {
+  value = module.service_container_definition.DEBUG-metadata
+}
