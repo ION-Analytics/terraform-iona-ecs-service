@@ -26,7 +26,7 @@ module "service_container_definition" {
   container_cpu       = var.cpu
   privileged          = var.privileged
   container_memory    = var.memory
-  stop_timeout        = var.stop_timeout
+  stop_timeout        = tonumber(var.stop_timeout)
   application_secrets = var.application_secrets
   platform_secrets    = var.platform_secrets
   platform_config     = var.platform_config
