@@ -37,6 +37,8 @@ module "service_container_definition" {
     hardLimit = 65535
     softLimit = var.nofile_soft_ulimit
   }]
+  log_configuration   = var.log_configuration
+  
 
   map_environment = merge({
     "LOGSPOUT_CLOUDWATCHLOGS_LOG_GROUP_STDOUT" = "${local.full_service_name}-stdout"
