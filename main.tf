@@ -30,23 +30,23 @@ module "service_container_definition" {
   application_secrets = var.application_secrets
   platform_secrets    = var.platform_secrets
   platform_config     = var.platform_config
-  port_mappings       = [{containerPort = var.port }]
-  mount_points        = [ var.container_mountpoint ]  
-  ulimits             = [{ 
-                          name = "nofile"
-                          hardLimit = 65535
-                          softLimit = var.nofile_soft_ulimit
-                        }]
+  port_mappings       = [{ containerPort = var.port }]
+  mount_points        = [var.container_mountpoint]
+  ulimits = [{
+    name      = "nofile"
+    hardLimit = 65535
+    softLimit = var.nofile_soft_ulimit
+  }]
 
   map_environment = merge({
-      "LOGSPOUT_CLOUDWATCHLOGS_LOG_GROUP_STDOUT" = "${local.full_service_name}-stdout"
-      "LOGSPOUT_CLOUDWATCHLOGS_LOG_GROUP_STDERR" = "${local.full_service_name}-stderr"
-      "STATSD_HOST"                              = "172.17.42.1"
-      "STATSD_PORT"                              = "8125"
-      "STATSD_ENABLED"                           = "true"
-      "ENV_NAME"                                 = var.env
-      "COMPONENT_NAME"                           = var.release["component"]
-      "VERSION"                                  = var.release["version"]
+    "LOGSPOUT_CLOUDWATCHLOGS_LOG_GROUP_STDOUT" = "${local.full_service_name}-stdout"
+    "LOGSPOUT_CLOUDWATCHLOGS_LOG_GROUP_STDERR" = "${local.full_service_name}-stderr"
+    "STATSD_HOST"                              = "172.17.42.1"
+    "STATSD_PORT"                              = "8125"
+    "STATSD_ENABLED"                           = "true"
+    "ENV_NAME"                                 = var.env
+    "COMPONENT_NAME"                           = var.release["component"]
+    "VERSION"                                  = var.release["version"]
     },
     var.common_application_environment,
     var.application_environment,

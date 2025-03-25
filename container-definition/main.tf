@@ -2,9 +2,9 @@
 ## container-definition module.
 
 locals {
-  team      = lookup(var.docker_labels, "team", "")
-  env       = lookup(var.docker_labels, "env", "")
-  component = lookup(var.docker_labels, "component", "")
+  team        = lookup(var.docker_labels, "team", "")
+  env         = lookup(var.docker_labels, "env", "")
+  component   = lookup(var.docker_labels, "component", "")
   extra_hosts = jsonencode(var.extra_hosts)
 }
 
@@ -32,12 +32,12 @@ data "aws_secretsmanager_secret" "platform_secrets" {
 locals {
   sorted_application_secrets = {
     for k, v in data.aws_secretsmanager_secret.secret :
-      element(split("/",v.name),3) => "${v.arn}"
+    element(split("/", v.name), 3) => "${v.arn}"
   }
 
   sorted_platform_secrets = {
     for k, v in data.aws_secretsmanager_secret.platform_secrets :
-      element(split("/",v.name),1) => "${v.arn}"
+    element(split("/", v.name), 1) => "${v.arn}"
   }
 
   final_secrets = merge(local.sorted_application_secrets, local.sorted_platform_secrets)
@@ -49,11 +49,11 @@ locals {
 
 locals {
   ## This part allows us to submit environment and secrets as either a map of strings. i.e.:
-    ##  { STATSD_HOST = "172.17.42.1" }
+  ##  { STATSD_HOST = "172.17.42.1" }
   ## or a list of objects, each containing 2 maps. i.e.:
-    ##  [
-    ##    { name = "STATSD_HOST" value = "172.17.42.1" }
-    ##  ]
+  ##  [
+  ##    { name = "STATSD_HOST" value = "172.17.42.1" }
+  ##  ]
   ## with the former taking precedence if both are submitted.
   ## The original code for secrets was changed to match our secrets format
   ## We could enforce a single style and get rid of the alternate variables and decision logic
@@ -100,7 +100,7 @@ locals {
   ## With all the preliminary massaging out of the way, we move to the complete container definition
   ## generated from the individual variables:
 
-    container_definition = {
+  container_definition = {
     name                   = var.container_name
     image                  = var.container_image
     essential              = var.essential
@@ -171,5 +171,5 @@ locals {
   ## Note in outputs.tf there are actually 6 ways to request the returned definition, 3 marked "sensitive" and 3 regular
   ## The json_map_encoded_list or sensitive_json_map_encoded_list are the ones that fit into our current taskdef module.
 
-  json_map                   = jsonencode(local.final_container_definition)
+  json_map = jsonencode(local.final_container_definition)
 }

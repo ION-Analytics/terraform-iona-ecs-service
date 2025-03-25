@@ -424,127 +424,127 @@ variable "container_memory_reservation" {
 # https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html
 variable "container_definition" {
   type = object({
-    command                  = optional(list(string))
-    cpu                      = optional(number)
-    dependsOn                = optional(list(object({
-      condition                = string
-      containerName            = string
-    })))    
-    disableNetworking        = optional(bool)
-    dnsSearchDomains         = optional(list(string))
-    dnsServers               = optional(list(string))
-    dockerLabels             = optional(map(string))
-    dockerSecurityOptions    = optional(list(string))
-    entryPoint               = optional(list(string))
-    environment              = optional(list(object({
-      name                     = string
-      value                    = string
-    })))    
-    environmentFiles         = optional(list(object({
-      type                     = string
-      value                    = string
-    })))    
-    essential                = optional(bool)
-    extraHosts               = optional(list(object({
-      hostname                 = string
-      ipAddress                = string
-    })))    
-    firelensConfiguration    = optional(object({
-      options                  = optional(map(string))
-      type                     = string
-    }))   
-    healthCheck              = optional(object({
-      command                  = list(string)
-      interval                 = optional(number)
-      retries                  = optional(number)
-      startPeriod              = optional(number)
-      timeout                  = optional(number)
-    }))             
-    hostname                 = optional(string)
-    image                    = optional(string)
-    interactive              = optional(bool)
-    links                    = optional(list(string))
-    linuxParameters          = optional(object({
-      capabilities             = optional(object({
-        add                      = optional(list(string))
-        drop                     = optional(list(string))
-      }))   
-      devices                = optional(list(object({
-        containerPath          = string
-        hostPath               = string
-        permissions            = optional(list(string))
-      })))    
-      initProcessEnabled     = optional(bool)
-      maxSwap                = optional(number)
-      sharedMemorySize       = optional(number)
-      swappiness             = optional(number)
-      tmpfs                  = optional(list(object({
-        containerPath          = string
-        mountOptions           = optional(list(string))
-        size                   = number
-      })))    
-    }))   
-    logConfiguration         = optional(object({
-      logDriver                = string
-      options                  = optional(map(string))
-      secretOptions            = optional(list(object({
-        name                     = string
-        valueFrom                = string
-      })))    
-    }))   
-    memory                   = optional(number)
-    memoryReservation        = optional(number)
-    mountPoints              = optional(list(object({
-      containerPath            = optional(string)
-      readOnly                 = optional(bool)
-      sourceVolume             = optional(string)
-    })))    
-    name                     = optional(string)
-    portMappings             = optional(list(object({
-      containerPort            = number
-      hostPort                 = optional(number)
-      protocol                 = optional(string)
-      name                     = optional(string)
-      appProtocol              = optional(string)
-    })))    
-    privileged                = optional(bool)
-    pseudoTerminal            = optional(bool)
-    readonlyRootFilesystem    = optional(bool)
-    repositoryCredentials     = optional(object({
-      credentialsParameter      = string
+    command = optional(list(string))
+    cpu     = optional(number)
+    dependsOn = optional(list(object({
+      condition     = string
+      containerName = string
+    })))
+    disableNetworking     = optional(bool)
+    dnsSearchDomains      = optional(list(string))
+    dnsServers            = optional(list(string))
+    dockerLabels          = optional(map(string))
+    dockerSecurityOptions = optional(list(string))
+    entryPoint            = optional(list(string))
+    environment = optional(list(object({
+      name  = string
+      value = string
+    })))
+    environmentFiles = optional(list(object({
+      type  = string
+      value = string
+    })))
+    essential = optional(bool)
+    extraHosts = optional(list(object({
+      hostname  = string
+      ipAddress = string
+    })))
+    firelensConfiguration = optional(object({
+      options = optional(map(string))
+      type    = string
     }))
-    resourceRequirements      = optional(list(object({
-      type                      = string
-      value                     = string
-    })))
-    restartPolicy             = optional(object({
-      enabled                   = bool
-      ignoredExitCodes          = optional(list(number))
-      restartAttemptPeriod      = optional(number)
+    healthCheck = optional(object({
+      command     = list(string)
+      interval    = optional(number)
+      retries     = optional(number)
+      startPeriod = optional(number)
+      timeout     = optional(number)
     }))
-    secrets                   = optional(list(object({
-      name                      = string
-      valueFrom                 = string
+    hostname    = optional(string)
+    image       = optional(string)
+    interactive = optional(bool)
+    links       = optional(list(string))
+    linuxParameters = optional(object({
+      capabilities = optional(object({
+        add  = optional(list(string))
+        drop = optional(list(string))
+      }))
+      devices = optional(list(object({
+        containerPath = string
+        hostPath      = string
+        permissions   = optional(list(string))
+      })))
+      initProcessEnabled = optional(bool)
+      maxSwap            = optional(number)
+      sharedMemorySize   = optional(number)
+      swappiness         = optional(number)
+      tmpfs = optional(list(object({
+        containerPath = string
+        mountOptions  = optional(list(string))
+        size          = number
+      })))
+    }))
+    logConfiguration = optional(object({
+      logDriver = string
+      options   = optional(map(string))
+      secretOptions = optional(list(object({
+        name      = string
+        valueFrom = string
+      })))
+    }))
+    memory            = optional(number)
+    memoryReservation = optional(number)
+    mountPoints = optional(list(object({
+      containerPath = optional(string)
+      readOnly      = optional(bool)
+      sourceVolume  = optional(string)
     })))
-    startTimeout              = optional(number)
-    stopTimeout               = optional(number)
-    systemControls            = optional(list(object({
-      namespace                 = string
-      value                     = string
+    name = optional(string)
+    portMappings = optional(list(object({
+      containerPort = number
+      hostPort      = optional(number)
+      protocol      = optional(string)
+      name          = optional(string)
+      appProtocol   = optional(string)
     })))
-    ulimits                   = optional(list(object({
-      hardLimit                 = number
-      name                      = string
-      softLimit                 = number
+    privileged             = optional(bool)
+    pseudoTerminal         = optional(bool)
+    readonlyRootFilesystem = optional(bool)
+    repositoryCredentials = optional(object({
+      credentialsParameter = string
+    }))
+    resourceRequirements = optional(list(object({
+      type  = string
+      value = string
     })))
-    user                      = optional(string)
-    versionConsistency        = optional(string)
-    volumesFrom               = optional(list(object({
-      readOnly                  = optional(bool)
-      sourceContainer           = string
+    restartPolicy = optional(object({
+      enabled              = bool
+      ignoredExitCodes     = optional(list(number))
+      restartAttemptPeriod = optional(number)
+    }))
+    secrets = optional(list(object({
+      name      = string
+      valueFrom = string
     })))
-    workingDirectory          = optional(string)
+    startTimeout = optional(number)
+    stopTimeout  = optional(number)
+    systemControls = optional(list(object({
+      namespace = string
+      value     = string
+    })))
+    ulimits = optional(list(object({
+      hardLimit = number
+      name      = string
+      softLimit = number
+    })))
+    user               = optional(string)
+    versionConsistency = optional(string)
+    volumesFrom = optional(list(object({
+      readOnly        = optional(bool)
+      sourceContainer = string
+    })))
+    workingDirectory = optional(string)
   })
-  description               = "Container definition overrides which allows for extra keys or overriding existing keys."
-  default                   = {}
+  description = "Container definition overrides which allows for extra keys or overriding existing keys."
+  default     = {}
 }

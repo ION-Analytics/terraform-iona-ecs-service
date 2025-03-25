@@ -24,8 +24,8 @@ resource "aws_ecs_task_definition" "taskdef" {
   dynamic "placement_constraints" {
     for_each = var.placement_constraint_on_demand_only == true ? [1] : []
     content {
-        type       =  "memberOf"
-        expression = "attribute:lifecycle == on-demand" 
+      type       = "memberOf"
+      expression = "attribute:lifecycle == on-demand"
     }
   }
 }
