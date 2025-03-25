@@ -18,8 +18,14 @@ variable "target_group_arn" {
 
 variable "multiple_target_group_arns" {
   description = "Mutiple target group ARNs to allow connection to multiple loadbalancers"
-  type        = list
+  type        = list(any)
   default     = []
+}
+
+variable "service_type" {
+  description = "Which of these 4 types of services are we creating? service (default) service_multiple_load_balancers, service_no_load_balancer, or service_for_awsvpc_no_loadbalancer"
+  type        = string
+  default     = "service"
 }
 
 variable "cluster" {
@@ -100,19 +106,19 @@ variable "deployment_maximum_percent" {
 
 variable "pack_and_distinct" {
   description = "Enable distinct instance and task binpacking for better cluster utilisation. Enter 'true' for clusters with auto scaling groups. Enter 'false' for clusters with no ASG and instant counts less than or equal to desired tasks"
-  type = string
-  default = "false"
+  type        = string
+  default     = "false"
 }
 
 variable "network_configuration_subnets" {
   description = "needed for network_mode awsvpc "
-  type        = list
+  type        = list(any)
   default     = []
 }
 
 variable "network_configuration_security_groups" {
   description = "needed for network_mode awsvpc "
-  type        = list
+  type        = list(any)
   default     = []
 }
 
@@ -124,6 +130,6 @@ variable "health_check_grace_period_seconds" {
 
 variable "capacity_providers" {
   description = "The capacity providers to add to the service. If the service is using the default capacity provider strategy, the service can also have one or more capacity providers specified using the capacityProviders parameter."
-  type = list
-  default = []
+  type        = list(any)
+  default     = []
 }
