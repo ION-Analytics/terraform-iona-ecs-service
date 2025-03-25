@@ -277,3 +277,18 @@ variable "spot_capacity_percentage" {
   type        = number
   description = "Percentage of tasks to run on spot instances"
 }
+
+# https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html
+variable "log_configuration" {
+  type = object({
+    logDriver = string
+    options   = optional(map(string))
+    secretOptions = optional(list(object({
+      name      = string
+      valueFrom = string
+    })))
+  })
+  description = "Log configuration options to send to a custom log driver for the container. For more details, see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html"
+  default     = null
+}
+
