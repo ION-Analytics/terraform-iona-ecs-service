@@ -226,7 +226,8 @@ variable "pack_and_distinct" {
 
 variable "stop_timeout" {
   description = "The duration is seconds to wait before the container is forcefully killed. Default 30s, max 120s."
-  default     = "none"
+  type        = number
+  default     = 120
 }
 
 variable "health_check_grace_period_seconds" {
@@ -265,14 +266,14 @@ variable "extra_hosts" {
 variable "image_build_details" {
   description = "Details of the image build"
   type        = map(string)
-  default     = {
-    "buildx" = "false",
+  default = {
+    "buildx"    = "false",
     "platforms" = ""
   }
 }
 
 variable "spot_capacity_percentage" {
-  default = 33
-  type = number
+  default     = 33
+  type        = number
   description = "Percentage of tasks to run on spot instances"
 }

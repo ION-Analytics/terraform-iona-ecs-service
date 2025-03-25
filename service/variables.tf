@@ -22,6 +22,12 @@ variable "multiple_target_group_arns" {
   default     = []
 }
 
+variable "service_type" {
+    description = "Which of these 4 types of services are we creating? service (default) service_multiple_load_balancers, service_no_load_balancer, or service_for_awsvpc_no_loadbalancer"
+    type        = string
+    default     = "service"
+}
+
 variable "cluster" {
   description = "The name of the ECS cluster to deploy the service to."
   type        = string
