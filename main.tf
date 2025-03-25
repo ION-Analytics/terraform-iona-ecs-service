@@ -66,7 +66,7 @@ module "service_container_definition" {
 }
 
 module "service" {
-  source = "./ecs-service-no-target-group"
+  source = "./service"
 
   name                                  = local.full_service_name
   cluster                               = var.ecs_cluster

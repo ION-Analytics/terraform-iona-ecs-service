@@ -9,7 +9,7 @@ locals {
 }
 
 ## Data resources locate platform and application secret ARNs
-## Mirroring the rigin path definitions from the original module
+## Mirroring the rigid path definitions from the original module
 
 ## var.application_secrets and var.platform_secrets are both lists of secret names
 ## i.e.: ["PLATFORM_SECRET_1", "PLATFORM_SECRET_2", etc... ]
@@ -25,6 +25,12 @@ data "aws_secretsmanager_secret" "platform_secrets" {
   name  = "platform_secrets/${element(var.platform_secrets, count.index)}"
 }
 
+## Future attempt at doing a custom secrets path
+# data "aws_secretsmanager_secret" "custom_secrets" {
+#   count = length(var.custom_secrets)
+#   name  = "${element(var.custom_secrets, count.index)}"
+# }
+
 ## Second local block uses the above data resources to format the map of 
 ## environment variable to ARN, but not in a way that AWS will understand yet
 ## i.e.: { PLATFORM_SECRET_1 = "arn:aws:secretsmanager:us-west-2:254076036999:secret:capplatformbsg/sfrazer-test/container-def-testing/PLATFORM_SECRET_1-nAUu3i"}
@@ -39,6 +45,7 @@ locals {
     for k, v in data.aws_secretsmanager_secret.platform_secrets :
     element(split("/", v.name), 1) => "${v.arn}"
   }
+
 
   final_secrets = merge(local.sorted_application_secrets, local.sorted_platform_secrets)
 }
@@ -59,6 +66,7 @@ locals {
   ## We could enforce a single style and get rid of the alternate variables and decision logic
 
   # Sort environment variables & secrets so terraform will not try to recreate on each plan/apply
+  ## This is a useful step as randomly applying the order results in unnecessary restarts
   env_as_map     = var.map_environment != null ? var.map_environment : var.environment != null ? { for m in var.environment : m.name => m.value } : null
   secrets_as_map = var.map_secrets != null ? var.map_secrets : local.final_secrets != null ? local.final_secrets : null
 

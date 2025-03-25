@@ -29,6 +29,12 @@ variable "platform_secrets" {
   default = []
 }
 
+## Future attempt at doing a custom secrets path
+# variable "custom_secrets" {
+#   type    = map(string)
+#   default = {}
+# }
+
 
 ## Variables defined by the source module this was cribbed from:
 ## I'll note where the name doesn't fit with our current ecs-service module
