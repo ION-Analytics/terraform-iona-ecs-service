@@ -13,7 +13,7 @@ locals {
 
 ## var.application_secrets and var.platform_secrets are both lists of secret names
 ## i.e.: ["PLATFORM_SECRET_1", "PLATFORM_SECRET_2", etc... ]
-# The data resource build the complete name and returns the ARN
+# The data resource builds the complete name and returns the ARN
 
 data "aws_secretsmanager_secret" "secret" {
   count = length(var.application_secrets)
@@ -25,11 +25,11 @@ data "aws_secretsmanager_secret" "platform_secrets" {
   name  = "platform_secrets/${element(var.platform_secrets, count.index)}"
 }
 
-## Future attempt at doing a custom secrets path
-# data "aws_secretsmanager_secret" "custom_secrets" {
-#   count = length(var.custom_secrets)
-#   name  = "${element(var.custom_secrets, count.index)}"
-# }
+## Attempt at doing a custom secrets path
+data "aws_secretsmanager_secret" "custom_secrets" {
+  count = length(var.custom_secrets)
+  name  = "${element(var.custom_secrets, count.index)}"
+}
 
 ## Second local block uses the above data resources to format the map of 
 ## environment variable to ARN, but not in a way that AWS will understand yet
@@ -46,8 +46,13 @@ locals {
     element(split("/", v.name), 1) => "${v.arn}"
   }
 
+  ## Future attempt at doing a custom secrets path
+  sorted_custom_secrets = {
+    for k, v in data.aws_secretsmanager_secret.custom_secrets :
+    element(split("/", v.name), length(split("/", v.name))) => "${v.arn}"
+  }
 
-  final_secrets = merge(local.sorted_application_secrets, local.sorted_platform_secrets)
+  final_secrets = merge(local.sorted_application_secrets, local.sorted_platform_secrets, local.sorted_custom_secrets)
 }
 
 ## The remainder of this file is cribbed from the cloudposse implementation originally at:
@@ -63,12 +68,11 @@ locals {
   ##  ]
   ## with the former taking precedence if both are submitted.
   ## The original code for secrets was changed to match our secrets format
-  ## We could enforce a single style and get rid of the alternate variables and decision logic
 
   # Sort environment variables & secrets so terraform will not try to recreate on each plan/apply
   ## This is a useful step as randomly applying the order results in unnecessary restarts
   env_as_map     = var.map_environment != null ? var.map_environment : var.environment != null ? { for m in var.environment : m.name => m.value } : null
-  secrets_as_map = var.map_secrets != null ? var.map_secrets : local.final_secrets != null ? local.final_secrets : null
+  secrets_as_map = local.final_secrets != null ? local.final_secrets : null
 
   ## This part then takes the output from above and turns it into the object form that the container_definition expects
   # https://www.terraform.io/docs/configuration/expressions.html#null
