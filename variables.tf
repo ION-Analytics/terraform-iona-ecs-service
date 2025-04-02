@@ -91,16 +91,18 @@ variable "multiple_target_group_arns" {
 variable "task_role_policy" {
   description = "IAM policy document to apply to the tasks via a task role"
   type        = string
-  default = jsondecode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:GetCallerIdentity",
-        Effect = "Allow",
-        Resource = "*",
-      }
-    ]
-  })
+  default = <<END
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:GetCallerIdentity",
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+END
 }
 
 variable "assume_role_policy" {
