@@ -49,7 +49,7 @@ locals {
   ## Future attempt at doing a custom secrets path
   sorted_custom_secrets = {
     for k, v in data.aws_secretsmanager_secret.custom_secrets :
-    element(split("/", v.name), length(split("/", v.name))) => "${v.arn}"
+    element(split("/", v.name), length(split("/", v.name))-1) => "${v.arn}"
   }
 
   final_secrets = merge(local.sorted_application_secrets, local.sorted_platform_secrets, local.sorted_custom_secrets)

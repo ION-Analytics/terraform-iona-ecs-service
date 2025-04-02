@@ -29,6 +29,7 @@ module "service_container_definition" {
   stop_timeout        = tonumber(var.stop_timeout)
   application_secrets = var.application_secrets
   platform_secrets    = var.platform_secrets
+  custom_secrets      = var.custom_secrets
   platform_config     = var.platform_config
   port_mappings       = [{ containerPort = var.port }]
   mount_points        = [var.container_mountpoint]
@@ -102,6 +103,7 @@ module "taskdef" {
   is_test                             = var.is_test
   placement_constraint_on_demand_only = var.placement_constraint_on_demand_only
   tags                                = local.tags
+  custom_secrets                      = var.custom_secrets
 }
 
 module "ecs_update_monitor" {
