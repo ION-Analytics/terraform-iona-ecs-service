@@ -29,6 +29,7 @@ module "service_container_definition" {
   stop_timeout        = tonumber(var.stop_timeout)
   application_secrets = var.application_secrets
   platform_secrets    = var.platform_secrets
+  custom_secrets      = var.custom_secrets
   platform_config     = var.platform_config
   port_mappings       = [{ containerPort = var.port }]
   mount_points        = [var.container_mountpoint]
