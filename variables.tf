@@ -91,19 +91,16 @@ variable "multiple_target_group_arns" {
 variable "task_role_policy" {
   description = "IAM policy document to apply to the tasks via a task role"
   type        = string
-
-  default = <<END
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:GetCallerIdentity",
-      "Effect": "Allow",
-      "Resource": "*"
-    }
-  ]
-}
-END
+  default = jsondecode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:GetCallerIdentity",
+        Effect = "Allow",
+        Resource = "*",
+      }
+    ]
+  })
 }
 
 variable "assume_role_policy" {
@@ -179,6 +176,12 @@ variable "application_secrets" {
 
 variable "platform_secrets" {
   description = "A list of common secret names for \"the platform\" that can be found in secrets manager"
+  type        = list(string)
+  default     = []
+}
+
+variable "custom_secrets" {
+  description = "A list of arbitrary secret names that can be found in secrets manager"
   type        = list(string)
   default     = []
 }

@@ -29,12 +29,16 @@ variable "platform_secrets" {
   default = []
 }
 
-## Future attempt at doing a custom secrets path
-# variable "custom_secrets" {
-#   type    = map(string)
-#   default = {}
-# }
+# Attempt at doing a custom secrets path
+# In this case, the string would be a full secret name, with the 
+# ENV variable being the last part of the name
+# i.e. odo-us/shared/DB_PASSWORD would set ENV: 
+# DB_PASSWORD = {secret_value}
 
+variable "custom_secrets" {
+  type    = list(string)
+  default = []
+}
 
 ## Variables defined by the source module this was cribbed from:
 ## I'll note where the name doesn't fit with our current ecs-service module
@@ -79,15 +83,6 @@ variable "container_cpu" {
 variable "map_environment" {
   type        = map(string)
   description = "The environment variables to pass to the container. This is a map of string: {key: value}. map_environment overrides environment"
-  default     = null
-}
-
-## This is still referenced in the current main.tf, but it's better to
-## use the platform_secrets and application_secrets instead.
-## using this would override those secrets, so it may make sense to remove this
-variable "map_secrets" {
-  type        = map(string)
-  description = "The secrets variables to pass to the container. This is a map of string: {key: value}. map_secrets overrides secrets"
   default     = null
 }
 
@@ -153,23 +148,10 @@ variable "ulimits" {
   default     = null
 }
 
-
-## Unused -- replaced by platform_sercrets and application_secrets logic
-# https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Secret.html
-variable "secrets" {
-  type = list(object({
-    name      = string
-    valueFrom = string
-  }))
-  description = "The secrets to pass to the container. This is a list of maps"
-  default     = null
-}
-
 ## BEYOND THIS POINT
 ## all variables are new, meaning they are not covered in the current
 ## template. Because they all default to null and all nulls are removed
 ## not specifying these values will not cause a change in the template
-
 
 # https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html
 variable "healthcheck" {
