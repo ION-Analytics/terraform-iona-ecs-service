@@ -103,6 +103,7 @@ module "taskdef" {
   is_test                             = var.is_test
   placement_constraint_on_demand_only = var.placement_constraint_on_demand_only
   tags                                = local.tags
+  custom_secrets                      = var.custom_secrets
 }
 
 module "ecs_update_monitor" {
