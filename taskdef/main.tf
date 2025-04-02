@@ -131,7 +131,7 @@ data "aws_iam_policy_document" "execution-role-policy" {
       actions = [
         "secretsmanager:GetSecretValue"
       ]
-      resources = [ "arn:aws:secretsmanager:${data.aws_region.current.name}:${local.account_id}:secret:${statement.value}"]
+      resources = [ "arn:aws:secretsmanager:${data.aws_region.current.name}:${local.account_id}:secret:${statement.value}-*"]
     }
   }
 }
