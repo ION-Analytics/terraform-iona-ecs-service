@@ -9,7 +9,7 @@ resource "aws_iam_role" "role" {
   )
 
   # from http://docs.aws.amazon.com/AmazonECS/latest/developerguide/service_IAM_role.html
-  assume_role_policy = jsondecode({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
@@ -35,7 +35,7 @@ resource "aws_iam_role_policy" "policy" {
   )
 
   # from http://docs.aws.amazon.com/AmazonECS/latest/developerguide/service_IAM_role.html (step 7)
-  policy = jsondecode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
