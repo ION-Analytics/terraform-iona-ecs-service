@@ -86,7 +86,7 @@ module "service" {
   pack_and_distinct                     = var.pack_and_distinct
   health_check_grace_period_seconds     = var.health_check_grace_period_seconds
   capacity_providers                    = local.capacity_providers
-  service_type                          = "service"
+  service_type                          = var.service_type
 }
 
 module "taskdef" {

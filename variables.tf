@@ -13,6 +13,12 @@ variable "release" {
   description = "Metadata about the release"
 }
 
+variable "service_type" {
+  type        = string
+  description = "The type of service to create, e.g. service, service_multiple_load_balancers, service_no_load_balancer,service_for_awsvpc_no_loadbalancer"
+  default     = "service"
+}
+
 variable "secrets" {
   type        = map(string)
   description = "Secret credentials fetched using credstash"
