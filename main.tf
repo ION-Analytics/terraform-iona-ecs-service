@@ -68,6 +68,36 @@ module "service_container_definition" {
   extra_hosts = var.extra_hosts
 }
 
+locals {
+  complete_container_definition = module.service_container_definition.rendered
+  # complete_container_definition = concat([module.service_container_definition.json_map_object],[local.firelens_container_definition])
+  # firelens_container_definition = {
+  #   name = "log_router",
+  #   image = "public.ecr.aws/aws-observability/aws-for-fluent-bit:stable",
+  #   cpu = 0,
+  #   memoryReservation = 51,
+  #   portMappings = [],
+  #   essential = true,
+  #   environment = [],
+  #   mountPoints = [],
+  #   volumesFrom = [],
+  #   user = "0",
+  #   logConfiguration = {
+  #     logDriver = "awslogs",
+  #     options = {
+  #       awslogs-group = "/ecs/ecs-aws-firelens-sidecar-container",
+  #       mode = "non-blocking",
+  #       awslogs-create-group = "true",
+  #       max-buffer-size = "25m",
+  #       awslogs-region = "us-east-1",
+  #       awslogs-stream-prefix = "firelens"
+  #     },
+  #     secretOptions = []
+  #   },
+  #   systemControls = [],
+  # }
+}
+
 module "service" {
   source = "./service"
 
@@ -87,6 +117,7 @@ module "service" {
   health_check_grace_period_seconds     = var.health_check_grace_period_seconds
   capacity_providers                    = local.capacity_providers
   service_type                          = var.service_type
+  deployment_circuit_breaker            = var.deployment_circuit_breaker
 }
 
 module "taskdef" {
@@ -94,6 +125,7 @@ module "taskdef" {
 
   family                              = local.full_service_name
   container_definition                = module.service_container_definition.json_map_encoded_list
+  # container_definition                = jsonencode(local.complete_container_definition)
   policy                              = var.task_role_policy
   assume_role_policy                  = var.assume_role_policy
   volume                              = var.taskdef_volume
