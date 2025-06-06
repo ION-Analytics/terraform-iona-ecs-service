@@ -38,8 +38,8 @@ module "service_container_definition" {
     hardLimit = 65535
     softLimit = var.nofile_soft_ulimit
   }]
-  log_configuration   = var.log_configuration
-  
+  log_configuration   = var.firelens_configuration != null ? var.log_configuration : null
+  firelens_configuration = var.firelens_configuration
 
   map_environment = merge({
     "LOGSPOUT_CLOUDWATCHLOGS_LOG_GROUP_STDOUT" = "${local.full_service_name}-stdout"
@@ -69,33 +69,35 @@ module "service_container_definition" {
 }
 
 locals {
-  complete_container_definition = module.service_container_definition.rendered
-  # complete_container_definition = concat([module.service_container_definition.json_map_object],[local.firelens_container_definition])
-  # firelens_container_definition = {
-  #   name = "log_router",
-  #   image = "public.ecr.aws/aws-observability/aws-for-fluent-bit:stable",
-  #   cpu = 0,
-  #   memoryReservation = 51,
-  #   portMappings = [],
-  #   essential = true,
-  #   environment = [],
-  #   mountPoints = [],
-  #   volumesFrom = [],
-  #   user = "0",
-  #   logConfiguration = {
-  #     logDriver = "awslogs",
-  #     options = {
-  #       awslogs-group = "/ecs/ecs-aws-firelens-sidecar-container",
-  #       mode = "non-blocking",
-  #       awslogs-create-group = "true",
-  #       max-buffer-size = "25m",
-  #       awslogs-region = "us-east-1",
-  #       awslogs-stream-prefix = "firelens"
-  #     },
-  #     secretOptions = []
-  #   },
-  #   systemControls = [],
-  # }
+  complete_container_definition = concat(
+    [ for sidecar in local.firelens_container_definition : sidecar if var.firelens_configuration != null],
+    [ module.service_container_definition.json_map_object ]
+  )
+  firelens_container_definition = [{
+    name = "log_router_${var.release["component"]}${var.name_suffix}",
+    image = "public.ecr.aws/aws-observability/aws-for-fluent-bit:stable",
+    cpu = 0,
+    memoryReservation = 51,
+    portMappings = [],
+    essential = true,
+    environment = [],
+    mountPoints = [],
+    volumesFrom = [],
+    user = "0",
+    logConfiguration = {
+      logDriver = "awslogs",
+      options = {
+        awslogs-group = "/ecs/ecs-aws-firelens-sidecar-container",
+        mode = "non-blocking",
+        awslogs-create-group = "true",
+        max-buffer-size = "25m",
+        awslogs-region = "us-east-1",
+        awslogs-stream-prefix = "firelens"
+      },
+      secretOptions = []
+    },
+    systemControls = [],
+  }]
 }
 
 module "service" {
@@ -124,8 +126,7 @@ module "taskdef" {
   source = "./taskdef"
 
   family                              = local.full_service_name
-  container_definition                = module.service_container_definition.json_map_encoded_list
-  # container_definition                = jsonencode(local.complete_container_definition)
+  container_definition                = jsonencode(local.complete_container_definition)
   policy                              = var.task_role_policy
   assume_role_policy                  = var.assume_role_policy
   volume                              = var.taskdef_volume
