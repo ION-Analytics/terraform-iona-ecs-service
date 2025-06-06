@@ -303,3 +303,24 @@ variable "log_configuration" {
   default     = null
 }
 
+# https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html
+variable "firelens_configuration" {
+  type = object({
+    options = optional(map(string))
+    type    = string
+  })
+  description = "The FireLens configuration for the container. This is used to specify and configure a log router for container logs. For more details, see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html"
+  default     = null
+}
+
+variable "deployment_circuit_breaker" {
+  description = "Configuration block for deployment circuit breaker"
+  type        = object({
+    enable   = bool
+    rollback = bool
+  })
+  default     = {
+    enable   = false
+    rollback = false
+    }
+}
