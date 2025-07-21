@@ -110,6 +110,18 @@ variable "pack_and_distinct" {
   default     = "false"
 }
 
+variable "deployment_circuit_breaker" {
+  description = "Configuration block for deployment circuit breaker"
+  type        = object({
+    enable   = bool
+    rollback = bool
+  })
+  default     = {
+    enable  = false
+    rollback = false
+    }
+}
+
 variable "network_configuration_subnets" {
   description = "needed for network_mode awsvpc "
   type        = list(any)
