@@ -50,7 +50,8 @@ resource "aws_iam_role_policy" "ecs_exec_policy" {
           "ssmmessages:OpenControlChannel",
           "ssmmessages:OpenDataChannel",
           "ecs:ExecuteCommand",
-          "ecs:DescribeTasks"
+          "ecs:DescribeTasks",
+          "firehose:Put*"
         ]
         Effect   = "Allow"
         Resource = "*"
@@ -99,6 +100,7 @@ data "aws_iam_policy_document" "execution-role-policy" {
       "ecr:BatchGetImage",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
+      "s3:GetObject"
     ]
     resources = [ "*" ]
   }

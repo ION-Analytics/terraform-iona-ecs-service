@@ -11,6 +11,11 @@ resource "aws_ecs_service" "service" {
   health_check_grace_period_seconds  = var.health_check_grace_period_seconds
   enable_execute_command             = true
 
+  deployment_circuit_breaker {
+    enable = var.deployment_circuit_breaker["enable"]
+    rollback = var.deployment_circuit_breaker["rollback"]
+  }
+
   load_balancer {
     target_group_arn = var.target_group_arn
     container_name   = var.container_name
@@ -71,6 +76,11 @@ resource "aws_ecs_service" "service_multiple_loadbalancers" {
     }
   }
 
+  deployment_circuit_breaker {
+    enable = var.deployment_circuit_breaker["enable"]
+    rollback = var.deployment_circuit_breaker["rollback"]
+  }
+
   ordered_placement_strategy {
     type  = "spread"
     field = "attribute:ecs.availability-zone"
@@ -116,6 +126,11 @@ resource "aws_ecs_service" "service_no_loadbalancer" {
   health_check_grace_period_seconds  = var.health_check_grace_period_seconds
   enable_execute_command             = true
 
+  deployment_circuit_breaker {
+    enable = var.deployment_circuit_breaker["enable"]
+    rollback = var.deployment_circuit_breaker["rollback"]
+  }
+
   ordered_placement_strategy {
     type  = "spread"
     field = "attribute:ecs.availability-zone"
@@ -159,6 +174,11 @@ resource "aws_ecs_service" "service_for_awsvpc_no_loadbalancer" {
   deployment_maximum_percent         = var.deployment_maximum_percent
   health_check_grace_period_seconds  = var.health_check_grace_period_seconds
   enable_execute_command             = true
+
+  deployment_circuit_breaker {
+    enable = var.deployment_circuit_breaker["enable"]
+    rollback = var.deployment_circuit_breaker["rollback"]
+  }
 
   network_configuration {
     subnets         = var.network_configuration_subnets
