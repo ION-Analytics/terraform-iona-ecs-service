@@ -18,6 +18,8 @@ locals {
   })
 }
 
+data "aws_region" "current" {}
+
 module "service_container_definition" {
   source = "./container-definition"
 
@@ -90,7 +92,7 @@ locals {
         mode = "non-blocking",
         awslogs-create-group = "true",
         max-buffer-size = "25m",
-        awslogs-region = var.platform_config["region"],
+        awslogs-region = data.aws_region.current,
         awslogs-stream-prefix = "firelens"
       },
       secretOptions = []
