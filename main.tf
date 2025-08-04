@@ -92,7 +92,7 @@ locals {
         mode = "non-blocking",
         awslogs-create-group = "true",
         max-buffer-size = "25m",
-        awslogs-region = data.aws_region.current,
+        awslogs-region = data.aws_region.current.name,
         awslogs-stream-prefix = "firelens"
       },
       secretOptions = []
