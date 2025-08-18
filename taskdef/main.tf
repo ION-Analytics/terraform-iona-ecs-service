@@ -100,6 +100,7 @@ data "aws_iam_policy_document" "execution-role-policy" {
       "ecr:BatchGetImage",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
+      "s3:List*",
       "s3:GetObject"
     ]
     resources = [ "*" ]
