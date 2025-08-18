@@ -41,7 +41,7 @@ The sidecar gets its firelens configuration directly from the variable. You coul
 
 The s3 object you pass for the config-file-value should be a valid fluentbit configuration snippet that will be imported into the fluentbit configuration.
 
-*** The s3 bucket that object is sourced from should start with the phrase 'firelens' so that the permissions will be applied properly to the ECS Role ***
+***The s3 bucket that object is sourced from should start with the phrase 'firelens' so that the permissions will be applied properly to the ECS Role***
 
 ```
   firelens_configuration = {
