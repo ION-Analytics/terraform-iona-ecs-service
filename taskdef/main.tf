@@ -109,7 +109,7 @@ data "aws_iam_policy_document" "execution-role-policy" {
       "s3:List*",
       "s3:GetObject"
     ]
-    resources = [ "arn:aws:s3:::${var.platform_config.config["firelense_bucket"]}" ]
+    resources = [ "arn:aws:s3:::${var.platform_config.config["firelens_bucket"]}" ]
   }
 
   statement {
