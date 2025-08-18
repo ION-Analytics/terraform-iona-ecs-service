@@ -39,7 +39,10 @@ The sidecar is named `log_router_${var.release["component"]}${var.name_suffix}` 
 
 The sidecar gets its firelens configuration directly from the variable. You could specify something other than "fluentbit" for the type, but this module won't understand what to do with it and you'll likely end up with a broken service. These options are the only ones availble and you will probably want them as the default fluentbit config doesn't do much. This modue does not create the s3 object, the calling module should do that.
 
-The s3 object you pass for the config-file-value should be a valid fluentbit configuration snippet that will be imported into the fluentbit configuration. 
+The s3 object you pass for the config-file-value should be a valid fluentbit configuration snippet that will be imported into the fluentbit configuration.
+
+*** The s3 bucket that object is sourced from should start with the phrase 'firelens' so that the permissions will be applied properly to the ECS Role ***
+
 ```
   firelens_configuration = {
     type = "fluentbit"
