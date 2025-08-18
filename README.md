@@ -17,6 +17,122 @@ The "ecs-service-no-target-group" used a series of "if-then" statements to deter
 I've only ever used the first of these, so I'm unsire what the others are for, but they are included for completeness
 
 
+# Fluent-bit logs
+
+This repo now allows logging through Firelens/Fluent-bit into Datadog.
+
+You can now override the log_configuration variable and pass an optional firelens_configuration variable that will configure the sidecar and fluentbit process. The firehose delivery stream must have already been setup outside of this module.
+
+```
+  log_configuration = {
+    logDriver = "awsfirelens"
+    options = {
+      Name = "firehose"
+      region = module.platform_config.config["region"]
+      delivery_stream = "DatadogFirehoseStream"
+    }
+  }
+```
+To enable the firelens sidecar, you MUST provide a firelens_configuration variable. If you do not provide that variable, the logs will flow to cloudwatch and datadog as usual AS LONG AS you don't override the log_configuration. If you override the log_configuration in the above fashion but do not provide a firelens_configuration, ***your services will break***.
+
+The sidecar is named `log_router_${var.release["component"]}${var.name_suffix}` and is sourced from `public.ecr.aws/aws-observability/aws-for-fluent-bit:stable`
+
+The sidecar gets its firelens configuration directly from the variable. You could specify something other than "fluentbit" for the type, but this module won't understand what to do with it and you'll likely end up with a broken service. These options are the only ones availble and you will probably want them as the default fluentbit config doesn't do much. This modue does not create the s3 object, the calling module should do that.
+
+The s3 object you pass for the config-file-value should be a valid fluentbit configuration snippet that will be imported into the fluentbit configuration. 
+```
+  firelens_configuration = {
+    type = "fluentbit"
+    options = {
+      enable-ecs-log-metadata = "true"
+      config-file-type =  "s3",
+      config-file-value = aws_s3_object.fluentbit_config.arn
+    }
+  }
+```
+
+The default Fluent-bit config looks like this:
+
+```
+[INPUT]
+    Name forward
+    Mem_Buf_Limit 25MB
+    unix_path /var/run/fluent.sock
+
+[INPUT]
+    Name forward
+    Listen 0.0.0.0
+    Port 24224
+
+[INPUT]
+    Name tcp
+    Tag firelens-healthcheck
+    Listen 127.0.0.1
+    Port 8877
+
+[FILTER]
+    Name record_modifier
+    Match *
+    Record ec2_instance_id i-0d1a7bebd0e42bc04
+    Record ecs_cluster or1-test
+    Record ecs_task_arn arn:aws:ecs:us-west-2:254076036999:task/or1-test/a87638ce0fa0408ba98d11d70dbc66b8
+    Record ecs_task_definition or1-test-cdflow-log-testing:37
+
+[OUTPUT]
+    Name null
+    Match firelens-healthcheck
+
+[OUTPUT]
+    Name firehose
+    Match cdflow-log-testing-firelens*
+    delivery_stream DatadogFirehoseStream
+    region us-west-2
+```
+
+These are all either defaults or items set up by the ECS task definition. 
+
+When you use an external configuration file, this gets added to the config:
+```
+@INCLUDE /fluent-bit/etc/external.conf
+```
+
+The contents of that file can be defined with a simple HEREDOC variable such as:
+
+```
+locals{
+  fluentbit_config = <<-EOF
+[FILTER]
+    name                  multiline
+    match                 *
+    multiline.key_content log
+    multiline.parser      go
+EOF
+}
+```
+
+## Other things you can do:
+
+# remove lines from the log via regex
+
+Useful for services behind a load balancer. The load balancer will periodically ping the service and generate a web access entry. If you are logging those, they can get to be a bit much (about 1 every second) 
+
+You can prevent those from leaving the sidecar with this config:
+
+```
+[FILTER]
+    Name    grep
+    Match   *
+    Exclude log ELB-HealthChecker/2.0
+```
+
+This tells fluentbit to use the grep filter (https://docs.fluentbit.io/manual/data-pipeline/filters/grep) and evaluate every entry that comes through. If the "log" field contains "ELB-HealthChecker/2.0" the entry will be silently discarded
+
+You can find more about configuring Fluent-bit here: https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/configuration-file
+
+## terraform-iona-log-config
+
+In order to standardize our use of these logging services, I've created the following repo/module: https://github.com/ION-Analytics/terraform-iona-log-config You're welcome to use this, but it may be tailored too specifically to Backstop's needs.
+
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements

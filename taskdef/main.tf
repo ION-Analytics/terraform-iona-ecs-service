@@ -84,6 +84,8 @@ resource "aws_iam_role" "ecs_tasks_execution_role" {
   assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
 }
 
+
+
 data "aws_caller_identity" "current" {
   count = var.is_test ? 0 : 1
 }
@@ -106,10 +108,9 @@ data "aws_iam_policy_document" "execution-role-policy" {
 
   statement {
     actions = [
-      "s3:List*",
       "s3:GetObject"
     ]
-    resources = [ "arn:aws:s3:::${var.platform_config.config["firelens_bucket"]}" ]
+    resources = [ "arn:aws:s3:::firelens*" ]
   }
 
   statement {
