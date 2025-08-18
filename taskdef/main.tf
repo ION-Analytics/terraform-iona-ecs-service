@@ -99,11 +99,17 @@ data "aws_iam_policy_document" "execution-role-policy" {
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage",
       "logs:CreateLogStream",
-      "logs:PutLogEvents",
+      "logs:PutLogEvents"
+    ]
+    resources = [ "*" ]
+  }
+
+  statement {
+    actions = [
       "s3:List*",
       "s3:GetObject"
     ]
-    resources = [ "*" ]
+    resources = [ "arn:aws:s3:::${var.platform_config.config["firelense_bucket"]}" ]
   }
 
   statement {
