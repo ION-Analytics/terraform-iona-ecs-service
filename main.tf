@@ -103,6 +103,7 @@ locals {
 }
 
 module "service" {
+  count  = var.service_type != "scheduled_task" ? 1 : 0
   source = "./service"
 
   name                                  = local.full_service_name
@@ -142,11 +143,12 @@ module "taskdef" {
 }
 
 module "ecs_update_monitor" {
+  count   = var.service_type != "scheduled_task" ? 1 : 0
   source  = "mergermarket/ecs-update-monitor/acuris"
   version = "2.3.5"
 
   cluster = var.ecs_cluster
-  service = module.service.name
+  service = module.service[0].name
   taskdef = module.taskdef.arn
   is_test = var.is_test
   timeout = var.deployment_timeout
@@ -212,6 +214,7 @@ resource "aws_cloudwatch_log_subscription_filter" "kinesis_log_stderr_stream" {
 }
 
 resource "aws_appautoscaling_target" "ecs" {
+  count              = var.service_type != "scheduled_task" ? 1 : 0
   min_capacity       = floor(var.desired_count / 2)
   max_capacity       = var.desired_count * 3
   resource_id        = "service/${var.ecs_cluster}/${local.full_service_name}"
@@ -220,11 +223,11 @@ resource "aws_appautoscaling_target" "ecs" {
 }
 
 resource "aws_appautoscaling_scheduled_action" "scale_down" {
-  count              = var.env != "live" && var.allow_overnight_scaledown ? 1 : 0
+  count              = var.env != "live" && var.allow_overnight_scaledown && var.service_type != "scheduled_task" ? 1 : 0
   name               = "scale_down-${local.full_service_name}"
-  service_namespace  = aws_appautoscaling_target.ecs.service_namespace
-  resource_id        = aws_appautoscaling_target.ecs.resource_id
-  scalable_dimension = aws_appautoscaling_target.ecs.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs[0].service_namespace
+  resource_id        = aws_appautoscaling_target.ecs[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs[0].scalable_dimension
   schedule           = "cron(*/30 ${var.overnight_scaledown_start_hour}-${var.overnight_scaledown_end_hour - 1} ? * * *)"
 
   scalable_target_action {
@@ -234,11 +237,11 @@ resource "aws_appautoscaling_scheduled_action" "scale_down" {
 }
 
 resource "aws_appautoscaling_scheduled_action" "scale_back_up" {
-  count              = var.env != "live" && var.allow_overnight_scaledown ? 1 : 0
+  count              = var.env != "live" && var.allow_overnight_scaledown && var.service_type != "scheduled_task" ? 1 : 0
   name               = "scale_up-${local.full_service_name}"
-  service_namespace  = aws_appautoscaling_target.ecs.service_namespace
-  resource_id        = aws_appautoscaling_target.ecs.resource_id
-  scalable_dimension = aws_appautoscaling_target.ecs.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs[0].service_namespace
+  resource_id        = aws_appautoscaling_target.ecs[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs[0].scalable_dimension
   schedule           = "cron(10 ${var.overnight_scaledown_end_hour} ? * MON-FRI *)"
 
   scalable_target_action {
@@ -251,12 +254,13 @@ resource "aws_appautoscaling_policy" "task_scaling_policy" {
   for_each = {
     for index, scale in var.scaling_metrics :
     scale.metric => scale
+    if var.service_type != "scheduled_task"
   }
   name               = each.value.name
   policy_type        = "TargetTrackingScaling"
-  resource_id        = aws_appautoscaling_target.ecs.resource_id
-  scalable_dimension = aws_appautoscaling_target.ecs.scalable_dimension
-  service_namespace  = aws_appautoscaling_target.ecs.service_namespace
+  resource_id        = aws_appautoscaling_target.ecs[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs[0].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs[0].service_namespace
 
   target_tracking_scaling_policy_configuration {
     disable_scale_in   = each.value.disable_scale_in
@@ -266,6 +270,109 @@ resource "aws_appautoscaling_policy" "task_scaling_policy" {
 
     predefined_metric_specification {
       predefined_metric_type = each.value.metric
+    }
+  }
+}
+
+# =============================================================================
+# EventBridge Scheduler resources (only created when service_type = "scheduled_task")
+# =============================================================================
+
+data "aws_ecs_cluster" "cluster" {
+  count        = var.service_type == "scheduled_task" ? 1 : 0
+  cluster_name = var.ecs_cluster
+}
+
+resource "aws_iam_role" "scheduler_role" {
+  count       = var.service_type == "scheduled_task" ? 1 : 0
+  name_prefix = "${substr(local.full_service_name, 0, min(length(local.full_service_name), 24))}-sched-"
+  description = "EventBridge Scheduler role for ${local.full_service_name}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "scheduler.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "scheduler_policy" {
+  count = var.service_type == "scheduled_task" ? 1 : 0
+  name  = "ecs-run-task"
+  role  = aws_iam_role.scheduler_role[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "ecs:RunTask"
+        Resource = module.taskdef.arn
+        Condition = {
+          ArnLike = {
+            "ecs:cluster" = data.aws_ecs_cluster.cluster[0].arn
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Action = "iam:PassRole"
+        Resource = [
+          module.taskdef.task_role_arn,
+          module.taskdef.task_execution_role_arn,
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_scheduler_schedule" "scheduled_task" {
+  for_each = {
+    for schedule in var.schedule_expressions :
+    schedule.name => schedule
+    if var.service_type == "scheduled_task"
+  }
+
+  name                         = "${local.full_service_name}-${each.key}"
+  schedule_expression          = each.value.expression
+  schedule_expression_timezone = var.schedule_timezone
+  state                        = var.schedule_enabled ? "ENABLED" : "DISABLED"
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  target {
+    arn      = data.aws_ecs_cluster.cluster[0].arn
+    role_arn = aws_iam_role.scheduler_role[0].arn
+
+    ecs_parameters {
+      task_definition_arn = module.taskdef.arn
+      task_count          = var.schedule_task_count
+
+      dynamic "capacity_provider_strategy" {
+        for_each = local.capacity_providers
+        content {
+          base              = 0
+          capacity_provider = capacity_provider_strategy.value["capacity_provider"]
+          weight            = capacity_provider_strategy.value["weight"]
+        }
+      }
+
+      dynamic "network_configuration" {
+        for_each = var.network_mode == "awsvpc" ? [1] : []
+        content {
+          subnets          = var.network_configuration_subnets
+          security_groups  = var.network_configuration_security_groups
+          assign_public_ip = false
+        }
+      }
     }
   }
 }

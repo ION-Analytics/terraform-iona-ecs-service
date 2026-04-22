@@ -324,3 +324,32 @@ variable "deployment_circuit_breaker" {
     rollback = false
     }
 }
+
+# EventBridge Scheduler variables (used when service_type = "scheduled_task")
+
+variable "schedule_expressions" {
+  description = "List of EventBridge Scheduler schedules. Each entry creates one schedule that triggers the ECS task. Only used when service_type = \"scheduled_task\"."
+  type = list(object({
+    name       = string
+    expression = string
+  }))
+  default = []
+}
+
+variable "schedule_timezone" {
+  description = "The timezone for schedule expressions (e.g. \"UTC\", \"America/New_York\"). Only used when service_type = \"scheduled_task\"."
+  type        = string
+  default     = "UTC"
+}
+
+variable "schedule_task_count" {
+  description = "The number of tasks to launch per scheduled invocation. Only used when service_type = \"scheduled_task\"."
+  type        = number
+  default     = 1
+}
+
+variable "schedule_enabled" {
+  description = "Whether the scheduled task is enabled. Only used when service_type = \"scheduled_task\"."
+  type        = bool
+  default     = true
+}
