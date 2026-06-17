@@ -199,11 +199,13 @@ locals {
 }
 
 resource "aws_cloudwatch_log_group" "stdout" {
+  count           = var.platform_config["datadog_log_subscription_arn"] != "" && var.add_datadog_feed ? 1 : 0
   name              = "${local.full_service_name}-stdout"
   retention_in_days = "7"
 }
 
 resource "aws_cloudwatch_log_group" "stderr" {
+  count           = var.platform_config["datadog_log_subscription_arn"] != "" && var.add_datadog_feed ? 1 : 0
   name              = "${local.full_service_name}-stderr"
   retention_in_days = "7"
 }
