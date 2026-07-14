@@ -174,6 +174,8 @@ Created when `service_type = "scheduled_task"`:
 | `name_suffix` | Suffix appended to the service name for multiple services per component | `string` | `""` |
 | `port` | The port the container listens on (not required for `scheduled_task`) | `string` | `"0"` |
 
+If `port` is not `"0"`, the module uses `port`; if `port` is `"0"` and `container_port_mappings` is set, the module uses `container_port_mappings`.
+
 ### Load Balancing
 
 | Name | Description | Type | Default |
@@ -200,7 +202,7 @@ Created when `service_type = "scheduled_task"`:
 | `nofile_soft_ulimit` | Soft ulimit for number of open files | `string` | `"4096"` |
 | `stop_timeout` | Seconds before container is forcefully killed (max 120) | `string` | `"120"` |
 | `container_labels` | Additional Docker labels for the container | `map(string)` | `{}` |
-| `container_port_mappings` | JSON array of port mappings (overrides `port` if set) | `string` | `""` |
+| `container_port_mappings` | Port mappings list used when `port` is `"0"` and mappings are provided | `list(object({containerPort=number, hostPort=optional(number), protocol=optional(string), name=optional(string), appProtocol=optional(string)}))` | `null` |
 | `extra_hosts` | Entries to add to `/etc/hosts` in the container | `list(object({hostname, ipAddress}))` | `[]` |
 
 ### Environment & Secrets
