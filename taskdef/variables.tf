@@ -24,16 +24,6 @@ variable "policy" {
   type        = string
 }
 
-variable "volume" {
-  description = <<-EOT
-    Volume block map. Use 'name' and 'host_path', or
-    'name', 'file_system_id' and 'access_point_id'.
-    The access point's POSIX user/group owns the mount, so it can be mounted as a non-root user.
-  EOT
-  type        = map(string)
-  default     = {}
-}
-
 variable "assume_role_policy" {
   description = "A valid IAM policy for assuming roles - optional"
   type        = string
