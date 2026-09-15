@@ -24,6 +24,12 @@ variable "policy" {
   type        = string
 }
 
+variable "volume" {
+  description = "Volume block map with 'name' and 'host_path'."
+  type        = map(string)
+  default     = {}
+}
+
 variable "assume_role_policy" {
   description = "A valid IAM policy for assuming roles - optional"
   type        = string
