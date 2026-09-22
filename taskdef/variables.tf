@@ -68,5 +68,5 @@ variable "custom_secrets" {
 variable "volume_configured_at_launch" {
   description = "Name a volume to be configured at launch"
   type        = string
-  default     = ""
+  default = null
 }

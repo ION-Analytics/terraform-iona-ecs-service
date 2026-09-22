@@ -23,7 +23,7 @@ resource "aws_ecs_task_definition" "taskdef" {
   }
 
   dynamic "volume" {
-    for_each = length(var.volume_configured_at_launch) > 0 ? [var.volume_configured_at_launch] : []
+    for_each = var.volume_configured_at_launch != null ? [var.volume_configured_at_launch] : []
     content {
       name                = volume.value
       configure_at_launch = true
