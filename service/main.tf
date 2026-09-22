@@ -64,6 +64,8 @@ resource "aws_ecs_service" "service" {
       ordered_placement_strategy,
     ]
   }
+
+  depends_on = [aws_iam_role_policy_attachment.execution_role_service_policy]
 }
 
 resource "aws_ecs_service" "service_multiple_loadbalancers" {
@@ -121,7 +123,7 @@ resource "aws_ecs_service" "service_multiple_loadbalancers" {
     content {
       name = volume_configuration.value.name
       managed_ebs_volume {
-        role_arn   = aws_iam_role.role.arn
+        role_arn = aws_iam_role.role.arn
         size_in_gb = volume_configuration.value.size_in_gb
       }
     }
@@ -134,6 +136,8 @@ resource "aws_ecs_service" "service_multiple_loadbalancers" {
       ordered_placement_strategy,
     ]
   }
+
+  depends_on = [aws_iam_role_policy_attachment.execution_role_service_policy]
 }
 
 resource "aws_ecs_service" "service_no_loadbalancer" {
@@ -182,7 +186,7 @@ resource "aws_ecs_service" "service_no_loadbalancer" {
     content {
       name = volume_configuration.value.name
       managed_ebs_volume {
-        role_arn   = aws_iam_role.role.arn
+        role_arn = aws_iam_role.role.arn
         size_in_gb = volume_configuration.value.size_in_gb
       }
     }
@@ -194,6 +198,8 @@ resource "aws_ecs_service" "service_no_loadbalancer" {
       ordered_placement_strategy,
     ]
   }
+
+  depends_on = [aws_iam_role_policy_attachment.execution_role_service_policy]
 }
 
 resource "aws_ecs_service" "service_for_awsvpc_no_loadbalancer" {
@@ -247,7 +253,7 @@ resource "aws_ecs_service" "service_for_awsvpc_no_loadbalancer" {
     content {
       name = volume_configuration.value.name
       managed_ebs_volume {
-        role_arn   = aws_iam_role.role.arn
+        role_arn = aws_iam_role.role.arn
         size_in_gb = volume_configuration.value.size_in_gb
       }
     }
@@ -260,4 +266,6 @@ resource "aws_ecs_service" "service_for_awsvpc_no_loadbalancer" {
       ordered_placement_strategy,
     ]
   }
+
+  depends_on = [aws_iam_role_policy_attachment.execution_role_service_policy]
 }
