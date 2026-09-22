@@ -346,6 +346,6 @@ variable "schedule_enabled" {
 
 variable "ephemeral_ebs_volume" {
   description = "Allocate an ephemeral EBS volume scoped to each task"
-  type        = object({ name: string, mount_path: string, size_in_gb = optional(number, 100 )})
+  type = object({ name : optional(string, "data"), mount_path : string, size_in_gb = number })
   default     = null
 }
