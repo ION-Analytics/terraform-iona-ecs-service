@@ -145,3 +145,9 @@ variable "capacity_providers" {
   type        = list(any)
   default     = []
 }
+
+variable "managed_ebs_volume" {
+  description = "Managed EBS volume to provision at launch time"
+  type = object({ name : string, infrastructure_role_arn : string, size_in_gb : number })
+  default     = null
+}

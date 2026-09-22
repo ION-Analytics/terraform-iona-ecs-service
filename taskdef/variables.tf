@@ -64,3 +64,9 @@ variable "custom_secrets" {
   type        = list(string)
   default     = []
 }
+
+variable "volume_configured_at_launch" {
+  description = "Name a volume to be configured at launch"
+  type        = string
+  default     = ""
+}

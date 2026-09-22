@@ -46,6 +46,17 @@ resource "aws_ecs_service" "service" {
     }
   }
 
+  dynamic "volume_configuration" {
+    for_each = var.managed_ebs_volume != null ? [var.managed_ebs_volume] : []
+    content {
+      name = volume_configuration.value.name
+      managed_ebs_volume {
+        role_arn = volume_configuration.value.infrastructure_role_arn
+        size_in_gb = volume_configuration.value.size_in_gb
+      }
+    }
+  }
+
   force_new_deployment = true
   lifecycle {
     create_before_destroy = true
