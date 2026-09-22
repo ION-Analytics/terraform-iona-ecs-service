@@ -149,7 +149,6 @@ module "service" {
   managed_ebs_volume = var.ephemeral_ebs_volume != null ? {
     name                    = var.ephemeral_ebs_volume.name
     size_in_gb              = var.ephemeral_ebs_volume.size_in_gb
-    infrastructure_role_arn = module.taskdef.task_execution_role_arn
   } : null
 }
 

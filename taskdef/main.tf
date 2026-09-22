@@ -93,12 +93,6 @@ resource "aws_iam_role" "ecs_tasks_execution_role" {
   assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "execution_role_service_policy" {
-  for_each   = toset(length(var.volume_configured_at_launch) > 0 ? ["AmazonECSInfrastructureRolePolicyForVolumes"] : [])
-  role       = aws_iam_role.ecs_tasks_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/${each.value}"
-}
-
 data "aws_caller_identity" "current" {
   count = var.is_test ? 0 : 1
 }
