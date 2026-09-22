@@ -47,7 +47,7 @@ resource "aws_ecs_service" "service" {
   }
 
   dynamic "volume_configuration" {
-    for_each = var.managed_ebs_volume != null ? [var.managed_ebs_volume] : []
+    for_each = toset(var.managed_ebs_volume != null ? [var.managed_ebs_volume] : [])
     content {
       name = volume_configuration.value.name
       managed_ebs_volume {
@@ -119,7 +119,7 @@ resource "aws_ecs_service" "service_multiple_loadbalancers" {
   }
 
   dynamic "volume_configuration" {
-    for_each = var.managed_ebs_volume != null ? [var.managed_ebs_volume] : []
+    for_each = toset(var.managed_ebs_volume != null ? [var.managed_ebs_volume] : [])
     content {
       name = volume_configuration.value.name
       managed_ebs_volume {
@@ -182,7 +182,7 @@ resource "aws_ecs_service" "service_no_loadbalancer" {
   }
 
   dynamic "volume_configuration" {
-    for_each = var.managed_ebs_volume != null ? [var.managed_ebs_volume] : []
+    for_each = toset(var.managed_ebs_volume != null ? [var.managed_ebs_volume] : [])
     content {
       name = volume_configuration.value.name
       managed_ebs_volume {
@@ -249,7 +249,7 @@ resource "aws_ecs_service" "service_for_awsvpc_no_loadbalancer" {
   }
 
   dynamic "volume_configuration" {
-    for_each = var.managed_ebs_volume != null ? [var.managed_ebs_volume] : []
+    for_each = toset(var.managed_ebs_volume != null ? [var.managed_ebs_volume] : [])
     content {
       name = volume_configuration.value.name
       managed_ebs_volume {
