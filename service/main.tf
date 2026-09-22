@@ -116,6 +116,17 @@ resource "aws_ecs_service" "service_multiple_loadbalancers" {
     }
   }
 
+  dynamic "volume_configuration" {
+    for_each = var.managed_ebs_volume != null ? [var.managed_ebs_volume] : []
+    content {
+      name = volume_configuration.value.name
+      managed_ebs_volume {
+        role_arn   = volume_configuration.value.infrastructure_role_arn
+        size_in_gb = volume_configuration.value.size_in_gb
+      }
+    }
+  }
+
   force_new_deployment = true
   lifecycle {
     create_before_destroy = true
@@ -163,6 +174,17 @@ resource "aws_ecs_service" "service_no_loadbalancer" {
       base              = 0
       capacity_provider = capacity_provider_strategy.value["capacity_provider"]
       weight            = capacity_provider_strategy.value["weight"]
+    }
+  }
+
+  dynamic "volume_configuration" {
+    for_each = var.managed_ebs_volume != null ? [var.managed_ebs_volume] : []
+    content {
+      name = volume_configuration.value.name
+      managed_ebs_volume {
+        role_arn   = volume_configuration.value.infrastructure_role_arn
+        size_in_gb = volume_configuration.value.size_in_gb
+      }
     }
   }
 
@@ -217,6 +239,17 @@ resource "aws_ecs_service" "service_for_awsvpc_no_loadbalancer" {
       base              = 0
       capacity_provider = capacity_provider_strategy.value["capacity_provider"]
       weight            = capacity_provider_strategy.value["weight"]
+    }
+  }
+
+  dynamic "volume_configuration" {
+    for_each = var.managed_ebs_volume != null ? [var.managed_ebs_volume] : []
+    content {
+      name = volume_configuration.value.name
+      managed_ebs_volume {
+        role_arn   = volume_configuration.value.infrastructure_role_arn
+        size_in_gb = volume_configuration.value.size_in_gb
+      }
     }
   }
 
