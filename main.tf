@@ -168,6 +168,7 @@ module "taskdef" {
   placement_constraint_on_demand_only = var.placement_constraint_on_demand_only
   tags                                = local.tags
   custom_secrets                      = var.custom_secrets
+  volume_configured_at_launch         = var.ephemeral_ebs_volume != null ? var.ephemeral_ebs_volume.name : null
 }
 
 module "ecs_update_monitor" {
