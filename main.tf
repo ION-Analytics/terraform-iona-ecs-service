@@ -82,6 +82,7 @@ module "service_container_definition" {
     var.container_labels,
   )
   extra_hosts = var.extra_hosts
+  healthcheck = var.container_health_check
 }
 
 locals {
