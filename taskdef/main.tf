@@ -19,20 +19,7 @@ resource "aws_ecs_task_definition" "taskdef" {
 
   volume {
     name      = lookup(var.volume, "name", "dummy")
-    host_path = lookup(var.volume, "file_system_id", "") == "" ? lookup(var.volume, "host_path", "/tmp/dummy_volume") : null
-
-    dynamic "efs_volume_configuration" {
-      for_each = lookup(var.volume, "file_system_id", "") == "" ? [] : [1]
-      content {
-        file_system_id     = var.volume.file_system_id
-        transit_encryption = "ENABLED"
-
-        authorization_config {
-          access_point_id = lookup(var.volume, "access_point_id", null)
-          iam             = "ENABLED"
-        }
-      }
-    }
+    host_path = lookup(var.volume, "host_path", "/tmp/dummy_volume")
   }
 
   dynamic "volume" {

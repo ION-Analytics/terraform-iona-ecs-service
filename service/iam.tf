@@ -15,9 +15,6 @@ data "aws_iam_policy_document" "policy_document" {
     actions = [
       "ec2:AuthorizeSecurityGroupIngress",
       "ec2:Describe*",
-      "elasticfilesystem:Describe*",
-      "elasticfilesystem:ClientMount",
-      "elasticfilesystem:List*",
       "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
       "elasticloadbalancing:DeregisterTargets",
       "elasticloadbalancing:Describe*",
