@@ -31,6 +31,14 @@ locals {
     "team"      = var.release["team"]
     "version"   = var.release["version"]
   })
+
+  container_mountpoints = var.ephemeral_ebs_volume != null ? [
+    var.container_mountpoint, {
+      sourceVolume  = var.ephemeral_ebs_volume.name
+      containerPath = var.ephemeral_ebs_volume.mount_path
+      readOnly      = false
+    }
+  ] : [var.container_mountpoint]
 }
 
 data "aws_region" "current" {}
@@ -49,7 +57,7 @@ module "service_container_definition" {
   custom_secrets      = var.custom_secrets
   platform_config     = var.platform_config
   port_mappings       = var.port != "0" ? [{ containerPort = var.port }] : []
-  mount_points        = [var.container_mountpoint]
+  mount_points        = local.container_mountpoints
   ulimits = [{
     name      = "nofile"
     hardLimit = 65535
@@ -139,6 +147,10 @@ module "service" {
   capacity_providers                    = local.capacity_providers
   service_type                          = var.service_type
   deployment_circuit_breaker            = var.deployment_circuit_breaker
+  managed_ebs_volume = var.ephemeral_ebs_volume != null ? {
+    name                    = var.ephemeral_ebs_volume.name
+    size_in_gb              = var.ephemeral_ebs_volume.size_in_gb
+  } : null
 }
 
 module "taskdef" {
@@ -156,6 +168,7 @@ module "taskdef" {
   placement_constraint_on_demand_only = var.placement_constraint_on_demand_only
   tags                                = local.tags
   custom_secrets                      = var.custom_secrets
+  volume_configured_at_launch         = var.ephemeral_ebs_volume != null ? var.ephemeral_ebs_volume.name : null
 }
 
 module "ecs_update_monitor" {

@@ -21,6 +21,15 @@ resource "aws_ecs_task_definition" "taskdef" {
     name      = lookup(var.volume, "name", "dummy")
     host_path = lookup(var.volume, "host_path", "/tmp/dummy_volume")
   }
+
+  dynamic "volume" {
+    for_each = var.volume_configured_at_launch != null ? [var.volume_configured_at_launch] : []
+    content {
+      name                = volume.value
+      configure_at_launch = true
+    }
+  }
+
   dynamic "placement_constraints" {
     for_each = var.placement_constraint_on_demand_only == true ? [1] : []
     content {
@@ -83,8 +92,6 @@ resource "aws_iam_role" "ecs_tasks_execution_role" {
   description        = "Task execution role for ${var.family}"
   assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
 }
-
-
 
 data "aws_caller_identity" "current" {
   count = var.is_test ? 0 : 1
