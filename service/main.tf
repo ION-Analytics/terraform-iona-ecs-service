@@ -46,6 +46,17 @@ resource "aws_ecs_service" "service" {
     }
   }
 
+  dynamic "volume_configuration" {
+    for_each = toset(var.managed_ebs_volume != null ? [var.managed_ebs_volume] : [])
+    content {
+      name = volume_configuration.value.name
+      managed_ebs_volume {
+        role_arn = aws_iam_role.role.arn
+        size_in_gb = volume_configuration.value.size_in_gb
+      }
+    }
+  }
+
   force_new_deployment = true
   lifecycle {
     create_before_destroy = true
@@ -53,6 +64,8 @@ resource "aws_ecs_service" "service" {
       ordered_placement_strategy,
     ]
   }
+
+  depends_on = [aws_iam_role_policy_attachment.execution_role_service_policy]
 }
 
 resource "aws_ecs_service" "service_multiple_loadbalancers" {
@@ -105,6 +118,17 @@ resource "aws_ecs_service" "service_multiple_loadbalancers" {
     }
   }
 
+  dynamic "volume_configuration" {
+    for_each = toset(var.managed_ebs_volume != null ? [var.managed_ebs_volume] : [])
+    content {
+      name = volume_configuration.value.name
+      managed_ebs_volume {
+        role_arn = aws_iam_role.role.arn
+        size_in_gb = volume_configuration.value.size_in_gb
+      }
+    }
+  }
+
   force_new_deployment = true
   lifecycle {
     create_before_destroy = true
@@ -112,6 +136,8 @@ resource "aws_ecs_service" "service_multiple_loadbalancers" {
       ordered_placement_strategy,
     ]
   }
+
+  depends_on = [aws_iam_role_policy_attachment.execution_role_service_policy]
 }
 
 resource "aws_ecs_service" "service_no_loadbalancer" {
@@ -155,12 +181,25 @@ resource "aws_ecs_service" "service_no_loadbalancer" {
     }
   }
 
+  dynamic "volume_configuration" {
+    for_each = toset(var.managed_ebs_volume != null ? [var.managed_ebs_volume] : [])
+    content {
+      name = volume_configuration.value.name
+      managed_ebs_volume {
+        role_arn = aws_iam_role.role.arn
+        size_in_gb = volume_configuration.value.size_in_gb
+      }
+    }
+  }
+
   force_new_deployment = true
   lifecycle {
     ignore_changes = [
       ordered_placement_strategy,
     ]
   }
+
+  depends_on = [aws_iam_role_policy_attachment.execution_role_service_policy]
 }
 
 resource "aws_ecs_service" "service_for_awsvpc_no_loadbalancer" {
@@ -209,6 +248,17 @@ resource "aws_ecs_service" "service_for_awsvpc_no_loadbalancer" {
     }
   }
 
+  dynamic "volume_configuration" {
+    for_each = toset(var.managed_ebs_volume != null ? [var.managed_ebs_volume] : [])
+    content {
+      name = volume_configuration.value.name
+      managed_ebs_volume {
+        role_arn = aws_iam_role.role.arn
+        size_in_gb = volume_configuration.value.size_in_gb
+      }
+    }
+  }
+
   force_new_deployment = true
   lifecycle {
     ignore_changes = [
@@ -216,4 +266,6 @@ resource "aws_ecs_service" "service_for_awsvpc_no_loadbalancer" {
       ordered_placement_strategy,
     ]
   }
+
+  depends_on = [aws_iam_role_policy_attachment.execution_role_service_policy]
 }

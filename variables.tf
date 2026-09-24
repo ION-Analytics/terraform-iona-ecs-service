@@ -347,3 +347,20 @@ variable "schedule_enabled" {
   type        = bool
   default     = true
 }
+
+variable "ephemeral_ebs_volume" {
+  description = "Allocate an ephemeral EBS volume scoped to each task"
+  type = object({ name : optional(string, "data"), mount_path : string, size_in_gb = number })
+}
+
+variable "container_health_check" {
+  type = object({
+    command     = list(string)
+    interval    = optional(number)
+    retries     = optional(number)
+    startPeriod = optional(number)
+    timeout     = optional(number)
+  })
+  description = "A map containing command (string), timeout, interval (duration in seconds), retries (1-10, number of times to retry before marking container unhealthy), and startPeriod (0-300, optional grace period to wait, in seconds, before failed healthchecks count toward retries)"
+  default     = null
+}
