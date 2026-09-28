@@ -4,6 +4,10 @@ A Terraform module for deploying ECS services or scheduled tasks on AWS. It crea
 
 All service types support ECS Exec, capacity provider strategies (including Graviton and Spot), AWS Secrets Manager integration, and optional FireLens/Fluent Bit log routing.
 
+## MIGRATION NOTE
+
+If you are coming to this module from the terraform-acuris-ecs-service / mergermarket/terraform-acuris-ecs-service module, you need to set init_process_enabled to true if you want to have 100% parity with the older module. This causes your app to run as PID 7 instead of PID 1
+
 ## Usage
 
 ### Standard service with ALB
