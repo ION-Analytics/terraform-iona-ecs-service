@@ -89,6 +89,7 @@ module "service_container_definition" {
     },
     var.container_labels,
   )
+  linux_parameters = var.init_process_enabled ? { initProcessEnabled = var.init_process_enabled } : null
   extra_hosts = var.extra_hosts
   healthcheck = var.container_health_check
 }

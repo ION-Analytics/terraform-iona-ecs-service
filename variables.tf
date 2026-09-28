@@ -98,7 +98,7 @@ variable "multiple_target_group_arns" {
 variable "task_role_policy" {
   description = "IAM policy document to apply to the tasks via a task role"
   type        = string
-  default = <<END
+  default     = <<END
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -316,14 +316,14 @@ variable "firelens_configuration" {
 
 variable "deployment_circuit_breaker" {
   description = "Configuration block for deployment circuit breaker"
-  type        = object({
+  type = object({
     enable   = bool
     rollback = bool
   })
-  default     = {
+  default = {
     enable   = false
     rollback = false
-    }
+  }
 }
 
 variable "schedule_expression" {
@@ -346,8 +346,8 @@ variable "schedule_enabled" {
 
 variable "ephemeral_ebs_volume" {
   description = "Allocate an ephemeral EBS volume scoped to each task"
-  type = object({ name : optional(string, "data"), mount_path : string, size_in_gb = number })
-  default = null 
+  type        = object({ name : optional(string, "data"), mount_path : string, size_in_gb = number })
+  default     = null
 }
 
 variable "container_health_check" {
@@ -360,4 +360,10 @@ variable "container_health_check" {
   })
   description = "A map containing command (string), timeout, interval (duration in seconds), retries (1-10, number of times to retry before marking container unhealthy), and startPeriod (0-300, optional grace period to wait, in seconds, before failed healthchecks count toward retries)"
   default     = null
+}
+
+variable "init_process_enabled" {
+  description = "Include an init process in the running container (i.e. docker run --init)"
+  type        = bool
+  default     = false
 }
