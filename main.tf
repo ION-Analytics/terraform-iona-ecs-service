@@ -56,7 +56,7 @@ module "service_container_definition" {
   platform_secrets    = var.platform_secrets
   custom_secrets      = var.custom_secrets
   platform_config     = var.platform_config
-  port_mappings       = var.port != "0" ? [{ containerPort = var.port }] : []
+  port_mappings       = var.container_port_mappings != null ? var.container_port_mappings : var.port != "0" ? [{ containerPort = var.port }] : []
   mount_points        = local.container_mountpoints
   ulimits = [{
     name      = "nofile"
